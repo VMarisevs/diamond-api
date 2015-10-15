@@ -74,7 +74,9 @@ var Diamond = function(id, carat, cut, color, clarity, depth, table, price, x, y
 
 // When a user goes to /, return a small help string.
 app.get('/', function(req, res) {
-  res.send("This is the Diamond API.");
+  //var text = readFileSync("index.html");
+  //res.send("This is the Diamond API.");
+  res.render('index.ejs', { put: true});
 });
 
 
@@ -85,16 +87,16 @@ app.get('/', function(req, res) {
 app.get('/GET/:diamondID',
 	function (req, res){
 		var diamondId = req.params.diamondID;
-		var result;
 			
 		db.serialize(function(){
 			db.each(
 				"SELECT * FROM Diamonds WHERE id = " + diamondId, 
 				function(err, row) {
-					result = "id: " + row.id + " carat: " + row.carat + " color:" + row.color;
-					res.json(result);
+					var diamond  = new Diamond(
+									row.id , row.carat, row.cut, row.color, row.clarity, row.depth, row.table, row.price, row.x, row.y,row.z ); 
+					res.json(diamond);
 					
-					console.log("id :" + row.id + " carat: " + row.carat);				   
+				//	console.log(diamond);				
 			  });
 			
 		});
@@ -147,6 +149,7 @@ app.post('/POST',
 								diamond = new Diamond(rowid, row.carat, row.cut, row.color, row.clarity, row.depth, row.table, row.price, row.x, row.y, row.z);
 								
 								console.log(diamond);
+								res.json(diamond);
 							}
 						);				
 				}
@@ -164,7 +167,7 @@ app.post('/POST',
 
 // PUT a new diamond at a given id.
 // curl command:
-// curl.exe -X PUT --data "id=1&carat=0.24&cut=Very Good&color=Y&clarity=SI1&depth=59.8&table=55&price=327&x=4.2&y=4.35&z=2.48" http://127.0.0.1:8000/PUT
+// curl.exe -X PUT --data "id=44&carat=0.24&cut=Very Good&color=Y&clarity=SI1&depth=59.8&table=55&price=327&x=4.2&y=4.35&z=2.48" http://127.0.0.1:8000/PUT
 
 app.put('/PUT',
 	function (req, res){
@@ -176,9 +179,11 @@ app.put('/PUT',
 			var stmt = db.prepare("UPDATE Diamonds"
 						+ " SET carat = ?,cut = ?,color = ?, clarity = ?,depth = ?,'table' = ?,price = ?,x = ?,y = ?,z = ?"
 						+ " WHERE"
-						+ " id = " + diamond.id);
+						+ " id = ?");
 			
-			stmt.run( diamond.carat, diamond.cut, diamond.color, diamond.clarity, diamond.depth, diamond.table, diamond.price, diamond.x, diamond.y, diamond.z);
+			stmt.run( diamond.carat, diamond.cut, diamond.color, diamond.clarity, diamond.depth, diamond.table, diamond.price, diamond.x, diamond.y, diamond.z,diamond.id);
+			
+			res.json(diamond);
 		});
 	}
 );

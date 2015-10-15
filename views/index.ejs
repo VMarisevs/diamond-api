@@ -1,0 +1,196 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+	<head><title>R: Prices of 50,000 round cut diamonds</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<link rel="stylesheet" type="text/css" href="R.css">
+	
+	<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+	<script type='text/javascript'>
+		$(document).ready(function(){
+			 
+			$("#showButton").click(function(event){
+				if ($.isNumeric($("#showDiamondId").val())){
+					window.location.href = "/GET/" + $("#showDiamondId").val();
+				}
+			});
+			
+			$("#deleteButton").click(function(event){
+				if ($.isNumeric($("#deleteDiamondId").val())){
+					$.ajax({
+						url: '/DELETE',
+						type: 'DELETE',
+						data: 'id=' + $("#deleteDiamondId").val(),
+						success: function(result) {
+						}
+					});
+					var msg = "Record with id " + $("#deleteDiamondId").val()
+											+ " successfully deleted.";
+					alert(msg);
+				}
+			});
+			
+			$("#postInsert").click(function(event){
+				$.ajax({
+					url: '/POST',
+					type: 'POST',
+					data: 	'carat=' + $("#postCarat").val()
+							+ '&cut=' + $("#postCut").val()
+							+ '&color=' + $("#postColor").val()
+							+ '&clarity=' + $("#postClarity").val()
+							+ '&depth=' + $("#postDepth").val()
+							+ '&table=' + $("#postTable").val()
+							+ '&price=' + $("#postPrice").val()
+							+ '&x=' + $("#postX").val()
+							+ '&y=' + $("#postY").val()
+							+ '&z=' + $("#postZ").val()
+					,success: function(data) {
+						var msg = 	"The new diamond inserted. It's \nid = " + data.id
+									+ "\nCarat : " + data.carat
+									+ "\nCut : " + data.cut
+									+ "\nColor : " + data.color;
+						alert(msg);						
+					}
+				});
+			});
+			
+			$("#putUpdate").click(function(event){
+				$.ajax({
+					url: '/PUT',
+					type: 'PUT',
+					data: 	
+							 'id=' + $("#putId").val()
+							+ '&carat=' + $("#putCarat").val()
+							+ '&cut=' + $("#putCut").val()
+							+ '&color=' + $("#putColor").val()
+							+ '&clarity=' + $("#putClarity").val()
+							+ '&depth=' + $("#putDepth").val()
+							+ '&table=' + $("#putTable").val()
+							+ '&price=' + $("#putPrice").val()
+							+ '&x=' + $("#putX").val()
+							+ '&y=' + $("#putY").val()
+							+ '&z=' + $("#putZ").val()
+					,success: function(data) {
+						var msg = 	"Diamond with id = " + data.id + " is updated to: "
+									+ "\nCarat : " + data.carat
+									+ "\nCut : " + data.cut
+									+ "\nColor : " + data.color;
+						alert(msg);						
+					}
+				});
+			});
+			
+		});
+	</script>
+	
+	
+	</head>
+	
+	<body>
+	
+			<table>
+				<tr>
+					<th>Display diamond</th>
+				</tr>
+				<tr>
+					<td>Diamond id</td>
+					<td><input id="showDiamondId" type="text"></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td><input id="showButton" type="button" value="Show"></td>
+				</tr>
+
+				<tr>
+					<th><br/><br/>Delete diamond from db</th>
+				</tr>
+				<tr>
+					<td>Diamond id</td>
+					<td><input id="deleteDiamondId" type="text"></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td><input id="deleteButton" type="button" value="Delete"></td>
+				</tr>
+
+				<tr>
+					<th><br/><br/>Insert diamond into db</th>
+				</tr>
+				<tr>
+					<td>Carat</td><td><input id="postCarat" type="text" name="carat" value="0.24"></td>
+				</tr>
+				<tr>
+					<td>Cut</td><td><input id="postCut" type="text" name="cut" value="Very Good"></td>
+				</tr>
+				<tr>
+					<td>color</td><td><input id="postColor" type="text" name="color" value="Y"></td>
+				</tr>
+				<tr>
+					<td>clarity</td><td><input id="postClarity" type="text" name="clarity" value="SI1"></td>
+				</tr>
+				<tr>
+					<td>depth</td><td><input id="postDepth" type="text" name="depth" value="59.8"></td>
+				</tr>
+				<tr>
+					<td>table</td><td><input id="postTable" type="text" name="table" value="55"></td>
+				</tr>
+				<tr>
+					<td>price</td><td><input id="postPrice" type="text" name="price" value="327"></td>
+				</tr>
+				<tr>
+					<td>x</td><td><input id="postX" type="text" name="x" value="4.2"></td>
+				</tr>
+				<tr>
+					<td>y</td><td><input id="postY" type="text" name="y" value="4.35"></td>
+				</tr>
+				<tr>
+					<td>z</td><td><input id="postZ" type="text" name="z" value="2.48"></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td><input id="postInsert" type="button" value="Insert"></td>
+				</tr>
+
+				<tr>
+					<th><br/><br/>Update diamond in db</th>
+				</tr>
+				<tr>
+					<td>Diamond id</td><td><input id="putId" type="text"  value="1"></td>
+				</tr>
+				<tr>
+					<td>Carat</td><td><input id="putCarat" type="text" name="carat" value="0.24"></td>
+				</tr>
+				<tr>
+					<td>Cut</td><td><input id="putCut" type="text" name="cut" value="Very Good"></td>
+				</tr>
+				<tr>
+					<td>color</td><td><input id="putColor" type="text" name="color" value="Y"></td>
+				</tr>
+				<tr>
+					<td>clarity</td><td><input id="putClarity" type="text" name="clarity" value="SI1"></td>
+				</tr>
+				<tr>
+					<td>depth</td><td><input id="putDepth" type="text" name="depth" value="59.8"></td>
+				</tr>
+				<tr>
+					<td>table</td><td><input id="putTable" type="text" name="table" value="55"></td>
+				</tr>
+				<tr>
+					<td>price</td><td><input id="putPrice" type="text" name="price" value="327"></td>
+				</tr>
+				<tr>
+					<td>x</td><td><input id="putX" type="text" name="x" value="4.2"></td>
+				</tr>
+				<tr>
+					<td>y</td><td><input id="putY" type="text" name="y" value="4.35"></td>
+				</tr>
+				<tr>
+					<td>z</td><td><input id="putZ" type="text" name="z" value="2.48"></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td><input id="putUpdate" type="button" value="Update"></td>
+				</tr>
+			</table>
+		
+	</body>
+</html>
