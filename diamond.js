@@ -83,27 +83,45 @@ app.get('/', function(req, res) {
 
 // GET a diamond by its id
 // browser http://localhost:8000/GET/2
-
-app.get('/GET/:diamondID',
+app.post('/diamond',
 	function (req, res){
-		var diamondId = req.params.diamondID;
-			
+		var diamondId =  (req.body.id) ? req.body.id : 0;
 		db.serialize(function(){
 			db.each(
 				"SELECT * FROM Diamonds WHERE id = " + diamondId, 
 				function(err, row) {
 					var diamond  = new Diamond(
-									row.id , row.carat, row.cut, row.color, row.clarity, row.depth, row.table, row.price, row.x, row.y,row.z ); 
-					res.json(diamond);
+									row.id , row.carat, row.cut, row.color, row.clarity, row.depth, row.table, row.price, row.x, row.y,row.z );
 					
-				//	console.log(diamond);				
+					
+					if (typeof(row) == "object"){						
+						return res.json(diamond);
+					}						
+					else{
+						return res.json("Error");
+					}
+							
 			  });
 			
-		});
-		
-		//db.close();
-		
-		
+		});		
+	}
+);
+
+app.get('/GET/:diamondID',
+	function (req, res){
+		var diamondId = (req.params.diamondID) ? req.params.diamondID :  req.body.id;
+	
+		db.serialize(function(){
+			db.each(
+				"SELECT * FROM Diamonds WHERE id = " + diamondId, 
+				function(err, row) {
+					var diamond  = new Diamond(
+									row.id , row.carat, row.cut, row.color, row.clarity, row.depth, row.table, row.price, row.x, row.y,row.z );
+					console.log(diamond);									
+					res.json(diamond);			
+			  });
+			
+		});		
 	}
 );
 
@@ -181,9 +199,16 @@ app.put('/PUT',
 						+ " WHERE"
 						+ " id = ?");
 			
-			stmt.run( diamond.carat, diamond.cut, diamond.color, diamond.clarity, diamond.depth, diamond.table, diamond.price, diamond.x, diamond.y, diamond.z,diamond.id);
+			stmt.run( diamond.carat, diamond.cut, diamond.color, diamond.clarity, diamond.depth, diamond.table, diamond.price, diamond.x, diamond.y, diamond.z,diamond.id,
+			function(err, row){
+				if (this.changes == 1)
+					res.json(diamond);
+				else
+					res.json("Error");
+			});
 			
-			res.json(diamond);
+			
+			
 		});
 	}
 );
@@ -206,11 +231,24 @@ app.delete('/DELETE',
 						+ " WHERE"
 						+ " id = ?");
 			
-			stmt.run(diamond.id);
+			stmt.run(diamond.id, function(err, row){
+				
+				if (this.changes == 1){
+					return res.json("OK");
+				}
+				else{
+					return res.json("Error");
+				}
+					
+			});
+			
 		});
+		
 		//console.log(diamond);
 	}
 );
 
+
+app.use(express.static(__dirname + '/public'));
 // Start the server.
 var server = app.listen(8000);
